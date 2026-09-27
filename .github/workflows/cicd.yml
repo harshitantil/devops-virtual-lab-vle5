@@ -11,13 +11,25 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Docker Image
-        run: docker build -t devops-lab-app ./app
+        run: docker build -t devops-lab-app:latest ./app
 
-      - name: Deploy to Kubernetes
+      - name: Create Kubernetes Cluster
+        uses: helm/kind-action@v1.12.0
+
+      - name: Load Docker Image into Kubernetes
+        run: kind load docker-image devops-lab-app:latest
+
+      - name: Deploy Application
         run: kubectl apply -f k8s/deployment.yml
 
-      - name: Apply Kubernetes Service
+      - name: Deploy Service
         run: kubectl apply -f k8s/service.yml
+
+      - name: Verify Deployment
+        run: |
+          kubectl get nodes
+          kubectl get pods
+          kubectl get services
