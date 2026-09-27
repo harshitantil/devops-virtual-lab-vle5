@@ -1,0 +1,14 @@
+- name: Configure EC2 Server
+  hosts: servers
+  become: yes
+
+  tasks:
+    - name: Install Docker
+      ansible.builtin.command:
+        cmd: yum install -y docker
+
+    - name: Start Docker Service
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
